@@ -1,6 +1,12 @@
+import { TaskDescription } from "@/entities/Task";
+import { TaskCodeEditor } from "@/widgets/TaskCodeEditor";
 import { FC } from "react";
 
 export const MainPage: FC = () => {
-  const x = 10;
-  return <div>{x}</div>;
+  return (
+    <main className="container mx-auto flex w-full flex-col gap-4 p-4">
+      <TaskDescription />
+      <TaskCodeEditor />
+    </main>
+  );
 };
