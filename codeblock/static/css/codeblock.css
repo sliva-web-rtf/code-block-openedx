@@ -1,0 +1,9 @@
+/* CSS for CodeBlockXBlock */
+
+.codeblock_block .count {
+    font-weight: bold;
+}
+
+.codeblock_block p {
+    cursor: pointer;
+}
