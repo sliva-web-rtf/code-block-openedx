@@ -2,16 +2,13 @@ import { Card, CardDescription, CardHeader, CardTitle } from "@/shared/ui";
 import { FC } from "react";
 import { useTask } from "../hooks/useTask";
 
-export const TaskDescription: FC = () => {
-  const {data} = useTask();
-
+export const TaskOutputFormat: FC = () => {
+  const { data } = useTask();
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{data?.title}</CardTitle>
-        <CardDescription>
-          {data?.description}
-        </CardDescription>
+        <CardTitle>Формат ввода</CardTitle>
+        <CardDescription>{data?.output_format}</CardDescription>
       </CardHeader>
     </Card>
   );
