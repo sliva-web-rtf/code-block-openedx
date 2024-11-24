@@ -79,6 +79,7 @@ export const TaskCodeEditor: FC = () => {
                   name="code"
                   render={({ field: { onChange, value, ref, onBlur } }) => (
                     <CodeMirror
+                      theme={"dark"}
                       ref={ref}
                       lang={langValue}
                       onBlur={onBlur}

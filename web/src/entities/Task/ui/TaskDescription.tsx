@@ -11,7 +11,7 @@ export const TaskDescription: FC = () => {
     <Card>
       <CardHeader>
         <CardTitle>{data?.title}</CardTitle>
-        <CardDescription>{data?.description}</CardDescription>
+        <CardDescription>{data?.content}</CardDescription>
         {import.meta.env.DEV && xBlockInfo && (
           <div>
             <p>User Id - {xBlockInfo.userId}</p>

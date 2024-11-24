@@ -2,13 +2,14 @@ import { XBlockInfo } from "../model/XBlockInfo";
 import { XBlockResponseDto } from "../dtos/XBlockInfoResponseDto";
 import { baseApi } from "./baseApi";
 import { AxiosResponse } from "axios";
+import { IXblockInfo } from "../model/IXBlockInfo";
 
 type fetchInfoParams = {
   signal: AbortSignal;
   url: string;
 };
 
-export const fetchInfo = async ({ signal, url }: fetchInfoParams) => {
+export const fetchInfo = async ({ signal, url }: fetchInfoParams): Promise<IXblockInfo> => {
   const responseDto = await baseApi.post<
     undefined,
     AxiosResponse<XBlockResponseDto>
