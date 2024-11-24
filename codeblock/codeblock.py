@@ -4,22 +4,15 @@ from importlib.resources import files
 
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
-from xblock.fields import Integer, Scope
+from xblock.fields import Integer, Scope, String
 
+DEFAULT_SECTION_ID = 'SEC_ID'
+DEFAULT_RELATION_ID = 'REL_ID'
 
+@XBlock.needs('user')
 class CodeBlockXBlock(XBlock):
-    """
-    TO-DO: document what your XBlock does.
-    """
-
-    # Fields are defined on the class.  You can access them in your code as
-    # self.<fieldname>.
-
-    # TO-DO: delete count, and define your own fields.
-    count = Integer(
-        default=0, scope=Scope.user_state,
-        help="A simple counter, to show something happening",
-    )
+    section_id = String(default=DEFAULT_SECTION_ID, display_name='ID секции', scope=Scope.settings)
+    relation_id = String(default=DEFAULT_RELATION_ID, display_name='Relation ID', scope=Scope.settings)
 
     def resource_string(self, path):
         """Handy helper for getting resources from our kit."""
@@ -38,8 +31,14 @@ class CodeBlockXBlock(XBlock):
         frag.initialize_js('CodeBlockXBlock')
         return frag
 
-    # TO-DO: change this handler to perform your own actions.  You may need more
-    # than one handler, or you may not need any handlers at all.
+    @XBlock.json_handler
+    def info(self, data, suffix=''):
+        return {
+            "sectionId": self.section_id,
+            "relationId": self.relation_id,
+            "userId": self.runtime.service(self, 'user').get_current_user().emails[0]
+        }
+
     @XBlock.json_handler
     def increment_count(self, data, suffix=''):
         """
@@ -48,11 +47,8 @@ class CodeBlockXBlock(XBlock):
         # Just to show data coming in...
         assert data['hello'] == 'world'
 
-        self.count += 1
-        return {"count": self.count}
+        return self.info()
 
-    # TO-DO: change this to create the scenarios you'd like to see in the
-    # workbench while developing your XBlock.
     @staticmethod
     def workbench_scenarios():
         """A canned scenario for display in the workbench."""

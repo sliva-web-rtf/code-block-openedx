@@ -1,4 +1,8 @@
-import { TaskDescription, TaskInputFormat, TaskOutputFormat } from "@/entities/Task";
+import {
+  TaskDescription,
+  TaskInputFormat,
+  TaskOutputFormat,
+} from "@/entities/Task";
 import { TaskCodeEditor } from "@/widgets/TaskCodeEditor";
 import { FC } from "react";
 
