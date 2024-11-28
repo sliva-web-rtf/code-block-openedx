@@ -42,3 +42,12 @@ export {
 
 export { Button, buttonVariants } from "./button";
 export { ModeToggle } from "./mode-toggle";
+
+export {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "./accordion";
+
+export { ScrollArea, ScrollBar } from "./scroll-area";

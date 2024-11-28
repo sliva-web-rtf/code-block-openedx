@@ -11,7 +11,7 @@ import {
 } from "@/shared/ui";
 import { FC, useEffect } from "react";
 import CodeMirror from "@uiw/react-codemirror";
-import { javascript } from "@codemirror/lang-javascript";
+import { python } from "@codemirror/lang-python";
 import {
   Controller,
   FormProvider,
@@ -23,10 +23,13 @@ import { taskCodeEditorSchema, TaskCodeEditorSchemaType } from "../libs/schema";
 import { useTask } from "@/entities/Task";
 import { TaskCodeEditorSkeleton } from "./TaskCodeEditorSkeleton";
 import { usePostAnswer } from "@/entities/Answer";
+import { useXBlockInfo } from "@/entities/XBlock";
 
 export const TaskCodeEditor: FC = () => {
   const { data, isLoading } = useTask();
   const { mutateAsync } = usePostAnswer();
+  const { data: xblockInfo } = useXBlockInfo();
+  const { relationId, sectionId, userId } = xblockInfo || {};
 
   const form = useForm<TaskCodeEditorSchemaType>({
     defaultValues: {
@@ -40,22 +43,24 @@ export const TaskCodeEditor: FC = () => {
     form.reset({
       code: data?.languages[0].template,
       lang: data?.languages[0].image,
-    })
-  }, [form, data])
+    });
+  }, [form, data]);
 
-
-  const submitHandler: SubmitHandler<TaskCodeEditorSchemaType> = async (data) => {
-    console.log({ data });
-    console.log({ ss: javascript({ jsx: true }) });
+  const submitHandler: SubmitHandler<TaskCodeEditorSchemaType> = async (
+    data,
+  ) => {
+    if (!relationId || !sectionId || !userId) {
+      return;
+    }
 
     await mutateAsync({
       answer: data.code,
       image: data.lang,
-      sectionType: 'SECTION_TYPE_CODE',
-      relationId: '1bab2a4a-7a70-4952-b5d6-7c2b612e0357',
-      sectionId: '2ce0f1a5-b4d9-4480-ba9f-c235b67a782d',
-      userId: 'test@test.ru'
-    })
+      sectionType: "SECTION_TYPE_CODE",
+      relationId,
+      sectionId,
+      userId,
+    });
   };
 
   if (!data || isLoading) {
@@ -106,7 +111,7 @@ export const TaskCodeEditor: FC = () => {
                       value={value}
                       onChange={onChange}
                       height="256px"
-                      extensions={[javascript({ typescript: true, jsx: true })]}
+                      extensions={[python()]}
                     />
                   )}
                 />

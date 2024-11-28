@@ -7,4 +7,8 @@ export type TaskResponseDto = {
   languages: LanguageResponseDto[];
   maxAttempts: number;
   attempts: number;
+  restrictions: {
+    memoryLimitInKib: number;
+    timeLimit: string;
+  }
 }

@@ -24,12 +24,11 @@ function CodeBlockXBlock(runtime, element) {
         if (!node) {
             throw new Error('App init error (node not found)')
         }
+        const infoUrl = runtime.handlerUrl(element, 'info')
 
-        node.onload = () => {
-            const infoUrl = runtime.handlerUrl(element, 'info')
-            setTimeout(() => {
-                node.contentWindow.postMessage({ infoUrl, baseUrl: window.location.origin }, '*')
-            }, 1000)
+        node.contentWindow.window.xblockProxy = {
+            infoUrl,
+            baseUrl: window.location.origin
         }
     }
 
@@ -40,25 +39,16 @@ function CodeBlockXBlock(runtime, element) {
             return
         }
 
-        setTimeout(() => {
-            /** @type { HTMLDivElement | null } */
-            const rootNode = node.contentDocument.querySelector('#root')
+        const observer = new ResizeObserver((entries) => {
+            for (const entry of entries) {
+                for (const bbSize of entry.borderBoxSize) {
+                    node.style.height = `${bbSize.blockSize}px`
 
-            if (!rootNode) {
-                return;
-            }
-
-            const observer = new ResizeObserver((entries) => {
-                for (const entry of entries) {
-                    for (const bbSize of entry.borderBoxSize) {
-                        node.style.height = `${bbSize.blockSize}px`
-
-                    }
                 }
-            })
+            }
+        })
 
-            observer.observe(rootNode)
-        }, 500)
+        observer.observe(node.contentDocument.body)
     }
 
     $(function () {

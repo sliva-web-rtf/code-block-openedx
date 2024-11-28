@@ -7,4 +7,6 @@ export interface ITask {
   languages: ILanguage[];
   maxAttempts: number;
   attempts: number;
+  memoryLimit: string;
+  timeLimit: Date;
 }

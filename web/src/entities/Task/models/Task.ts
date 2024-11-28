@@ -10,6 +10,8 @@ export class Task implements ITask {
   private _languages: ILanguage[];
   private _attempts: number;
   private _maxAttempts: number;
+  private _memoryLimitInKib: number;
+  private _timeLimit: string;
 
   constructor({
     title,
@@ -18,6 +20,7 @@ export class Task implements ITask {
     languages,
     attempts,
     maxAttempts,
+    restrictions,
   }: TaskResponseDto) {
     this._title = title;
     this._content = content;
@@ -25,6 +28,8 @@ export class Task implements ITask {
     this._languages = languages.map((l) => new Language(l));
     this._attempts = attempts;
     this._maxAttempts = maxAttempts;
+    (this._memoryLimitInKib = restrictions.memoryLimitInKib),
+      (this._timeLimit = restrictions.timeLimit);
   }
 
   public get title() {
@@ -49,6 +54,18 @@ export class Task implements ITask {
 
   public get maxAttempts() {
     return this._maxAttempts;
+  }
+
+  public get memoryLimit() {
+    return Math.floor(this._memoryLimitInKib / 1000).toString();
+  }
+
+  public get timeLimit() {
+    return new Date(
+      Math.floor(
+        Number(this._timeLimit.slice(0, this._timeLimit.length - 1)) * 1000,
+      ),
+    );
   }
 }
 
