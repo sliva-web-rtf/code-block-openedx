@@ -6,11 +6,18 @@ from web_fragments.fragment import Fragment
 from xblock.core import XBlock
 from xblock.fields import Integer, Scope, String
 
-DEFAULT_SECTION_ID = 'SEC_ID'
-DEFAULT_RELATION_ID = 'REL_ID'
+try:
+    from xblock.utils.resources import ResourceLoader  # pylint: disable=ungrouped-imports
+except ModuleNotFoundError:  # For backward compatibility with releases older than Quince.
+    from xblockutils.resources import ResourceLoader
+
+DEFAULT_SECTION_ID = '2ce0f1a5-b4d9-4480-ba9f-c235b67a782d'
+DEFAULT_RELATION_ID = '1bab2a4a-7a70-4952-b5d6-7c2b612e0357'
 
 @XBlock.needs('user')
 class CodeBlockXBlock(XBlock):
+    loader = ResourceLoader(__name__)
+
     section_id = String(default=DEFAULT_SECTION_ID, display_name='ID секции', scope=Scope.settings)
     relation_id = String(default=DEFAULT_RELATION_ID, display_name='Relation ID', scope=Scope.settings)
 
@@ -20,16 +27,16 @@ class CodeBlockXBlock(XBlock):
 
     # TO-DO: change this view to display your data your own way.
     def student_view(self, context=None):
-        """
-        The primary view of the CodeBlockXBlock, shown to students
-        when viewing courses.
-        """
-        html = self.resource_string("static/html/codeblock.html")
-        frag = Fragment(html.format(self=self))
-        frag.add_css(self.resource_string("static/css/codeblock.css"))
-        frag.add_javascript(self.resource_string("static/js/src/codeblock.js"))
-        frag.initialize_js('CodeBlockXBlock')
-        return frag
+        fragment = Fragment()
+        fragment.add_content(self.loader.render_django_template("static/html/codeblock.html"))
+        fragment.add_javascript(self.resource_string("static/js/src/init.js"))
+        fragment.initialize_js('CodeBlockXBlock')
+        # html = self.resource_string("static/html/codeblock.html")
+        # frag = Fragment(html.format(self=self))
+        # # frag.add_css(self.resource_string("static/css/codeblock.css"))
+        # frag.add_javascript(self.resource_string("static/js/src/init.js"))
+        # frag.initialize_js('CodeBlockXBlock')
+        return fragment
 
     @XBlock.json_handler
     def info(self, data, suffix=''):

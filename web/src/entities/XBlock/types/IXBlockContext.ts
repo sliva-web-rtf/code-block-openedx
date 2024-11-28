@@ -1,3 +1,1 @@
-import { IXBlockRuntime } from "./IXBlockRuntime";
-
-export type IXBlockContext = { runtime?: IXBlockRuntime; element?: HTMLElement };
+export type IXBlockContext = { infoUrl?: string, baseUrl?: string };

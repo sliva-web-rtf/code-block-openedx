@@ -1,4 +1,4 @@
-import { IXBlockRuntime } from "./IXBlockRuntime";
+import { IXBlockContext } from "./IXBlockContext";
 
 export declare global {
   export interface Window {
@@ -6,4 +6,4 @@ export declare global {
   }
 }
 
-type InitAppType = (runtime?: IXBlockRuntime, element?: HTMLElement) => void
+type InitAppType = (data: Required<IXBlockContext>) => void

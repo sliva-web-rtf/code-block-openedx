@@ -9,4 +9,16 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      input: [
+        'index.html'
+      ],
+      output: {
+        assetFileNames: 'codeblock.[ext]',
+        chunkFileNames: 'codeblock.[ext]',
+        entryFileNames: 'codeblock.js',
+      }
+    }
+  }
 });

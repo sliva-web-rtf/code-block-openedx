@@ -7,24 +7,25 @@ export const XBlockContextProvider: FC<PropsWithChildren> = (props) => {
   const [context, setContext] = useState<IXBlockContext>({});
 
   useEffect(() => {
-    window.initApp = (runtime, element) => {
-      setContext({ runtime, element });
-      window.initApp = () => {};
-    };
+    if (import.meta.env.PROD) {
+      const listener = (event: MessageEvent<Required<IXBlockContext>>) => {
+        console.log(event)
+        setContext(event.data);
+      };
+      window.addEventListener("message", listener);
+  
+      return () => window.removeEventListener("message", listener);
+    }
   }, []);
 
   useEffect(() => {
     if (import.meta.env.DEV) {
       setContext({
-        element: document.createElement("div"),
-        runtime: {
-          handlerUrl: (_element, key) =>
-            DEFAULT_URL_MOCK_MAP[key as DEFAULT_URL_MOCK],
-        },
-      });
-      window.initApp = () => {};
+        infoUrl: DEFAULT_URL_MOCK_MAP[DEFAULT_URL_MOCK.INFO_URL],
+        baseUrl: DEFAULT_URL_MOCK_MAP[DEFAULT_URL_MOCK.BASE_URL]
+      })
     }
-  }, []);
+  }, [])
 
   return <xBlockContext.Provider value={context} {...props} />;
 };

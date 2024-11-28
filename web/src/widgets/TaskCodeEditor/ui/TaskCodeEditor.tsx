@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
 import {
@@ -21,25 +21,45 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { taskCodeEditorSchema, TaskCodeEditorSchemaType } from "../libs/schema";
 import { useTask } from "@/entities/Task";
+import { TaskCodeEditorSkeleton } from "./TaskCodeEditorSkeleton";
+import { usePostAnswer } from "@/entities/Answer";
 
 export const TaskCodeEditor: FC = () => {
-  const { data } = useTask();
+  const { data, isLoading } = useTask();
+  const { mutateAsync } = usePostAnswer();
 
   const form = useForm<TaskCodeEditorSchemaType>({
     defaultValues: {
-      code: "",
+      code: data?.languages[0].template,
       lang: data?.languages[0].image,
     },
     resolver: zodResolver(taskCodeEditorSchema),
   });
 
-  const submitHandler: SubmitHandler<TaskCodeEditorSchemaType> = (data) => {
+  useEffect(() => {
+    form.reset({
+      code: data?.languages[0].template,
+      lang: data?.languages[0].image,
+    })
+  }, [form, data])
+
+
+  const submitHandler: SubmitHandler<TaskCodeEditorSchemaType> = async (data) => {
     console.log({ data });
     console.log({ ss: javascript({ jsx: true }) });
+
+    await mutateAsync({
+      answer: data.code,
+      image: data.lang,
+      sectionType: 'SECTION_TYPE_CODE',
+      relationId: '1bab2a4a-7a70-4952-b5d6-7c2b612e0357',
+      sectionId: '2ce0f1a5-b4d9-4480-ba9f-c235b67a782d',
+      userId: 'test@test.ru'
+    })
   };
 
-  if (!data) {
-    return null;
+  if (!data || isLoading) {
+    return <TaskCodeEditorSkeleton />;
   }
 
   return (
@@ -96,9 +116,9 @@ export const TaskCodeEditor: FC = () => {
         </Card>
         <Card>
           <CardHeader className="flex-row items-center justify-end space-y-0">
-            {data.max_attempts > 0 && (
+            {data.maxAttempts > 0 && (
               <p>
-                {data.attempts} попыток из {data.max_attempts}
+                {data.attempts} попыток из {data.maxAttempts}
               </p>
             )}
             <Button className="ml-auto" type="submit" variant="default">

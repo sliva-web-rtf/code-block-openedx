@@ -1,7 +1,16 @@
 import { useQuery } from "@tanstack/react-query";
 import { TASK_QUERY_KEY } from "../libs/constants";
 import { fetchTask } from "../api/fetchTask";
+import { useXBlockInfo } from "@/entities/XBlock";
 
 export const useTask = () => {
-  return useQuery({ queryKey: [TASK_QUERY_KEY], queryFn: fetchTask });
+  const { data } = useXBlockInfo();
+  const { relationId, sectionId } = data || {};
+
+  return useQuery({
+    queryKey: [TASK_QUERY_KEY],
+    queryFn: ({ signal }) =>
+      fetchTask({ signal, relationId: relationId!, sectionId: sectionId! }),
+    enabled: !!relationId && !!sectionId,
+  });
 };
