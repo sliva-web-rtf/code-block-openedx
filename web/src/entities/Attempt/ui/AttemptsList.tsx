@@ -54,7 +54,7 @@ export const AttemptsList: FC = () => {
                           ["text-green-500"]:
                             attempt.verdict === AnswerVerdict.OK,
                           ["text-red-500"]:
-                            attempt.verdict === AnswerVerdict.WA,
+                            attempt.verdict !== AnswerVerdict.OK,
                         })}
                       >
                         {getPrettyVerdict(attempt.verdict)}

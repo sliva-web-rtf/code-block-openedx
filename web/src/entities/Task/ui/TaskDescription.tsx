@@ -13,7 +13,7 @@ export const TaskDescription: FC = () => {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{taskData.title}</CardTitle>
+        <CardTitle className="text-3xl">{taskData.title}</CardTitle>
         <CardDescription>{taskData.content}</CardDescription>
       </CardHeader>
     </Card>

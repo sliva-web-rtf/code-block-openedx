@@ -6,12 +6,17 @@ import { Language } from "@/entities/Language/models/Language";
 export class Task implements ITask {
   private _title: string;
   private _content: string;
-  private _format: string | null;
   private _languages: ILanguage[];
   private _attempts: number;
   private _maxAttempts: number;
   private _memoryLimitInKib: number;
   private _timeLimit: string;
+  private _inputFormat: string;
+  private _outputFormat: string;
+  private _exampleTests: {
+    stdin: string;
+    stdout: string;
+  }[];
 
   constructor({
     title,
@@ -21,15 +26,18 @@ export class Task implements ITask {
     attempts,
     maxAttempts,
     restrictions,
+    exampleTests,
   }: TaskResponseDto) {
     this._title = title;
     this._content = content;
-    this._format = format;
     this._languages = languages.map((l) => new Language(l));
     this._attempts = attempts;
     this._maxAttempts = maxAttempts;
-    (this._memoryLimitInKib = restrictions.memoryLimitInKib),
-      (this._timeLimit = restrictions.timeLimit);
+    this._memoryLimitInKib = restrictions.memoryLimitInKib;
+    this._timeLimit = restrictions.timeLimit;
+    this._inputFormat = format.inputFormat;
+    this._outputFormat = format.outputFormat;
+    this._exampleTests = exampleTests;
   }
 
   public get title() {
@@ -40,8 +48,12 @@ export class Task implements ITask {
     return this._content;
   }
 
-  public get format() {
-    return this._format;
+  public get inputFormat() {
+    return this._inputFormat;
+  }
+
+  public get outputFormat() {
+    return this._outputFormat;
   }
 
   public get languages() {
@@ -57,7 +69,7 @@ export class Task implements ITask {
   }
 
   public get memoryLimit() {
-    return Math.floor(this._memoryLimitInKib / 1000).toString();
+    return Math.floor(this._memoryLimitInKib / 1024).toString();
   }
 
   public get timeLimit() {
@@ -67,7 +79,8 @@ export class Task implements ITask {
       ),
     );
   }
-}
 
-const x =
-  "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjYW5FZGl0Q291cnNlIjp0cnVlLCJleHAiOjE3MzI0Nzk1NjgsImlzQXV0aG9yIjp0cnVlLCJpc0NvYXV0aG9yIjp0cnVlLCJpc1RlYWNoZXIiOnRydWUsInN1YiI6IjExYWYwMmRhLWJmOWUtNDc2OS1hYTA3LTM2OTAzNTE3NzMzYyJ9.KYoUE1JQRt_3G5rncmf6SktKRHVEKuso7IgP9Lf0bo0";
+  public get exampleTests() {
+    return this._exampleTests;
+  }
+}

@@ -3,12 +3,19 @@ import { LanguageResponseDto } from "@/entities/Language/dtos/LanguageResponseDt
 export type TaskResponseDto = {
   title: string;
   content: string;
-  format: string | null;
+  format: {
+    inputFormat: string;
+    outputFormat: string;
+  };
   languages: LanguageResponseDto[];
   maxAttempts: number;
   attempts: number;
   restrictions: {
     memoryLimitInKib: number;
     timeLimit: string;
-  }
-}
+  };
+  exampleTests: {
+    stdin: string;
+    stdout: string;
+  }[]
+};

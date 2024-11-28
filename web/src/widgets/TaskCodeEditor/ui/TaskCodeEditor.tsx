@@ -33,17 +33,19 @@ export const TaskCodeEditor: FC = () => {
 
   const form = useForm<TaskCodeEditorSchemaType>({
     defaultValues: {
-      code: data?.languages[0].template,
+      code: data?.languages[0].template || "",
       lang: data?.languages[0].image,
     },
     resolver: zodResolver(taskCodeEditorSchema),
   });
 
   useEffect(() => {
-    form.reset({
-      code: data?.languages[0].template,
-      lang: data?.languages[0].image,
-    });
+    if (!form.getValues("code")) {
+      form.reset({
+        code: data?.languages[0].template,
+        lang: data?.languages[0].image,
+      });
+    }
   }, [form, data]);
 
   const submitHandler: SubmitHandler<TaskCodeEditorSchemaType> = async (
@@ -66,6 +68,9 @@ export const TaskCodeEditor: FC = () => {
   if (!data || isLoading) {
     return <TaskCodeEditorSkeleton />;
   }
+
+  const isValid = form.formState.isValid;
+  const isSubmitting = form.formState.isSubmitting;
 
   return (
     <FormProvider {...form}>
@@ -102,15 +107,13 @@ export const TaskCodeEditor: FC = () => {
                 <Controller
                   control={form.control}
                   name="code"
-                  render={({ field: { onChange, value, ref, onBlur } }) => (
+                  render={({ field: { onChange, value, onBlur } }) => (
                     <CodeMirror
-                      theme={"dark"}
-                      ref={ref}
                       lang={langValue}
                       onBlur={onBlur}
                       value={value}
                       onChange={onChange}
-                      height="256px"
+                      height="384px"
                       extensions={[python()]}
                     />
                   )}
@@ -126,7 +129,12 @@ export const TaskCodeEditor: FC = () => {
                 {data.attempts} попыток из {data.maxAttempts}
               </p>
             )}
-            <Button className="ml-auto" type="submit" variant="default">
+            <Button
+              disabled={!isValid || isSubmitting}
+              className="ml-auto"
+              type="submit"
+              variant="default"
+            >
               Отправить
             </Button>
           </CardHeader>

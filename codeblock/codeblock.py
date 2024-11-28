@@ -11,8 +11,8 @@ try:
 except ModuleNotFoundError:  # For backward compatibility with releases older than Quince.
     from xblockutils.resources import ResourceLoader
 
-DEFAULT_SECTION_ID = '2ce0f1a5-b4d9-4480-ba9f-c235b67a782d'
-DEFAULT_RELATION_ID = '1bab2a4a-7a70-4952-b5d6-7c2b612e0357'
+DEFAULT_SECTION_ID = 'eb9c182d-88e2-4701-97a0-deb41925bd68'
+DEFAULT_RELATION_ID = '8129c87c-3a76-4f7c-a7ad-2b1165d7a723'
 
 @XBlock.needs('user')
 class CodeBlockXBlock(XBlock):

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const taskCodeEditorSchema = z.object({
-  code: z.string(),
+  code: z.string().min(1, 'No code'),
   lang: z.string(),
 });
 
