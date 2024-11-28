@@ -35,20 +35,19 @@ function CodeBlockXBlock(runtime, element) {
     function initResizeObserver() {
         const node = getNode()
 
-        if (!node) {
-            return
-        }
-
         const observer = new ResizeObserver((entries) => {
             for (const entry of entries) {
                 for (const bbSize of entry.borderBoxSize) {
                     node.style.height = `${bbSize.blockSize}px`
-
                 }
             }
         })
 
-        observer.observe(node.contentDocument.body)
+        if (!node) {
+            return
+        }
+
+        queueMicrotask(() => observer.observe(node.contentDocument.body))
     }
 
     $(function () {
