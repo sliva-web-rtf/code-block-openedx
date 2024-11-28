@@ -14,7 +14,7 @@ function CodeBlockXBlock(runtime, element) {
             return _element
         }
 
-        _element = (element[0] || element).querySelector('[data-codeblock]')
+        _element = $(element)[0].querySelector('iframe[data-codeblock]')
         return _element;
     }
 
@@ -28,27 +28,26 @@ function CodeBlockXBlock(runtime, element) {
 
         node.contentWindow.window.xblockProxy = {
             infoUrl,
-            baseUrl: window.location.origin
+            baseUrl: window.location.origin,
         }
     }
 
     function initResizeObserver() {
         const node = getNode()
 
-        if (!node) {
-            return
-        }
-
         const observer = new ResizeObserver((entries) => {
             for (const entry of entries) {
                 for (const bbSize of entry.borderBoxSize) {
                     node.style.height = `${bbSize.blockSize}px`
-
                 }
             }
         })
 
+        if (!node) {
+            return
+        }
         observer.observe(node.contentDocument.body)
+        node.addEventListener('load', () => queueMicrotask(() => observer.observe(node.contentDocument.body)))
     }
 
     $(function () {
