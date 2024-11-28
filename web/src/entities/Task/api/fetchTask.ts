@@ -1,7 +1,32 @@
-import { QueryFunction } from "@tanstack/react-query";
-import { Task } from "../types/Task";
-import { TASK_MOCK } from "../libs/mocks";
+import { Task } from "../models/Task";
+import axios, { AxiosResponse } from "axios";
+import { TaskResponseDto } from "../dtos/TaskResponseDto";
 
-export const fetchTask: QueryFunction<Task> = () => {
-  return TASK_MOCK;
+type fetchTaskParams = {
+  signal?: AbortSignal;
+  sectionId: string;
+  relationId: string;
+};
+
+export const fetchTask = async ({
+  signal,
+  relationId,
+  sectionId,
+}: fetchTaskParams) => {
+  const responseDto = await axios.get<
+    undefined,
+    AxiosResponse<TaskResponseDto>
+  >("https://api.radium-rtf.ru/v1/relation/section", {
+    signal,
+    params: {
+      sectionId,
+      relationId,
+    },
+  });
+
+  try {
+    return new Task(responseDto.data);
+  } catch {
+    throw new Error("Failed parse XBlockInfo response");
+  }
 };

@@ -9,9 +9,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/shared/ui";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import CodeMirror from "@uiw/react-codemirror";
-import { javascript } from "@codemirror/lang-javascript";
+import { python } from "@codemirror/lang-python";
 import {
   Controller,
   FormProvider,
@@ -21,25 +21,50 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { taskCodeEditorSchema, TaskCodeEditorSchemaType } from "../libs/schema";
 import { useTask } from "@/entities/Task";
+import { TaskCodeEditorSkeleton } from "./TaskCodeEditorSkeleton";
+import { usePostAnswer } from "@/entities/Answer";
+import { useXBlockInfo } from "@/entities/XBlock";
 
 export const TaskCodeEditor: FC = () => {
-  const { data } = useTask();
+  const { data, isLoading } = useTask();
+  const { mutateAsync } = usePostAnswer();
+  const { data: xblockInfo } = useXBlockInfo();
+  const { relationId, sectionId, userId } = xblockInfo || {};
 
   const form = useForm<TaskCodeEditorSchemaType>({
     defaultValues: {
-      code: "",
+      code: data?.languages[0].template,
       lang: data?.languages[0].image,
     },
     resolver: zodResolver(taskCodeEditorSchema),
   });
 
-  const submitHandler: SubmitHandler<TaskCodeEditorSchemaType> = (data) => {
-    console.log({ data });
-    console.log({ ss: javascript({ jsx: true }) });
+  useEffect(() => {
+    form.reset({
+      code: data?.languages[0].template,
+      lang: data?.languages[0].image,
+    });
+  }, [form, data]);
+
+  const submitHandler: SubmitHandler<TaskCodeEditorSchemaType> = async (
+    data,
+  ) => {
+    if (!relationId || !sectionId || !userId) {
+      return;
+    }
+
+    await mutateAsync({
+      answer: data.code,
+      image: data.lang,
+      sectionType: "SECTION_TYPE_CODE",
+      relationId,
+      sectionId,
+      userId,
+    });
   };
 
-  if (!data) {
-    return null;
+  if (!data || isLoading) {
+    return <TaskCodeEditorSkeleton />;
   }
 
   return (
@@ -79,13 +104,14 @@ export const TaskCodeEditor: FC = () => {
                   name="code"
                   render={({ field: { onChange, value, ref, onBlur } }) => (
                     <CodeMirror
+                      theme={"dark"}
                       ref={ref}
                       lang={langValue}
                       onBlur={onBlur}
                       value={value}
                       onChange={onChange}
                       height="256px"
-                      extensions={[javascript({ typescript: true, jsx: true })]}
+                      extensions={[python()]}
                     />
                   )}
                 />
@@ -95,9 +121,9 @@ export const TaskCodeEditor: FC = () => {
         </Card>
         <Card>
           <CardHeader className="flex-row items-center justify-end space-y-0">
-            {data.max_attempts > 0 && (
+            {data.maxAttempts > 0 && (
               <p>
-                {data.attempts} попыток из {data.max_attempts}
+                {data.attempts} попыток из {data.maxAttempts}
               </p>
             )}
             <Button className="ml-auto" type="submit" variant="default">

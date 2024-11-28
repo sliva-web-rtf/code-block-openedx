@@ -4,22 +4,22 @@ from importlib.resources import files
 
 from web_fragments.fragment import Fragment
 from xblock.core import XBlock
-from xblock.fields import Integer, Scope
+from xblock.fields import Integer, Scope, String
 
+try:
+    from xblock.utils.resources import ResourceLoader  # pylint: disable=ungrouped-imports
+except ModuleNotFoundError:  # For backward compatibility with releases older than Quince.
+    from xblockutils.resources import ResourceLoader
 
+DEFAULT_SECTION_ID = '2ce0f1a5-b4d9-4480-ba9f-c235b67a782d'
+DEFAULT_RELATION_ID = '1bab2a4a-7a70-4952-b5d6-7c2b612e0357'
+
+@XBlock.needs('user')
 class CodeBlockXBlock(XBlock):
-    """
-    TO-DO: document what your XBlock does.
-    """
+    loader = ResourceLoader(__name__)
 
-    # Fields are defined on the class.  You can access them in your code as
-    # self.<fieldname>.
-
-    # TO-DO: delete count, and define your own fields.
-    count = Integer(
-        default=0, scope=Scope.user_state,
-        help="A simple counter, to show something happening",
-    )
+    section_id = String(default=DEFAULT_SECTION_ID, display_name='ID секции', scope=Scope.settings)
+    relation_id = String(default=DEFAULT_RELATION_ID, display_name='Relation ID', scope=Scope.settings)
 
     def resource_string(self, path):
         """Handy helper for getting resources from our kit."""
@@ -27,19 +27,25 @@ class CodeBlockXBlock(XBlock):
 
     # TO-DO: change this view to display your data your own way.
     def student_view(self, context=None):
-        """
-        The primary view of the CodeBlockXBlock, shown to students
-        when viewing courses.
-        """
-        html = self.resource_string("static/html/codeblock.html")
-        frag = Fragment(html.format(self=self))
-        frag.add_css(self.resource_string("static/css/codeblock.css"))
-        frag.add_javascript(self.resource_string("static/js/src/codeblock.js"))
-        frag.initialize_js('CodeBlockXBlock')
-        return frag
+        fragment = Fragment()
+        fragment.add_content(self.loader.render_django_template("static/html/codeblock.html"))
+        fragment.add_javascript(self.resource_string("static/js/src/init.js"))
+        fragment.initialize_js('CodeBlockXBlock')
+        # html = self.resource_string("static/html/codeblock.html")
+        # frag = Fragment(html.format(self=self))
+        # # frag.add_css(self.resource_string("static/css/codeblock.css"))
+        # frag.add_javascript(self.resource_string("static/js/src/init.js"))
+        # frag.initialize_js('CodeBlockXBlock')
+        return fragment
 
-    # TO-DO: change this handler to perform your own actions.  You may need more
-    # than one handler, or you may not need any handlers at all.
+    @XBlock.json_handler
+    def info(self, data, suffix=''):
+        return {
+            "sectionId": self.section_id,
+            "relationId": self.relation_id,
+            "userId": self.runtime.service(self, 'user').get_current_user().emails[0]
+        }
+
     @XBlock.json_handler
     def increment_count(self, data, suffix=''):
         """
@@ -48,11 +54,8 @@ class CodeBlockXBlock(XBlock):
         # Just to show data coming in...
         assert data['hello'] == 'world'
 
-        self.count += 1
-        return {"count": self.count}
+        return self.info()
 
-    # TO-DO: change this to create the scenarios you'd like to see in the
-    # workbench while developing your XBlock.
     @staticmethod
     def workbench_scenarios():
         """A canned scenario for display in the workbench."""
