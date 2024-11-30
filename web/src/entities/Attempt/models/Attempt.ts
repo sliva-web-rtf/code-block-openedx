@@ -18,8 +18,10 @@ export class Attempt implements IAttempt {
   }
 
   private getDateFromTime(time: string): Date {
-    const milliseconds = Math.floor(Number(time.slice(0, time.length - 1)) * 1000)
-    return new Date(milliseconds)
+    const milliseconds = Math.floor(
+      Number(time.slice(0, time.length - 1)) * 1000,
+    );
+    return new Date(milliseconds);
   }
 
   public get createdAt() {

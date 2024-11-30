@@ -1,5 +1,9 @@
 import { AttemptsList } from "@/entities/Attempt";
-import { TaskDescription, TaskExamples, TaskRestrictions } from "@/entities/Task";
+import {
+  TaskDescription,
+  TaskExamples,
+  TaskRestrictions,
+} from "@/entities/Task";
 import { TaskCodeEditor } from "@/widgets/TaskCodeEditor";
 import { FC } from "react";
 

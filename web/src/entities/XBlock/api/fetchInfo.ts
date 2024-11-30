@@ -1,24 +1,42 @@
 import { XBlockInfo } from "../model/XBlockInfo";
-import { XBlockResponseDto } from "../dtos/XBlockInfoResponseDto";
 import { baseApi } from "./baseApi";
 import { AxiosResponse } from "axios";
-import { IXblockInfo } from "../model/IXBlockInfo";
+import { FetchError } from "@/shared/libs/FetchError";
+import { QueryFunction } from "@tanstack/react-query";
+import { XBLOCK_QUERY_KEY } from "../libs/contants";
+import { BadArgsError } from "@/shared/libs/BadArgsError";
+import { ParseError } from "@/shared/libs/ParseError";
+import { parseXBlockInfoResponseDto } from "../utils/parseXBlockInfoResponseDto";
 
-type fetchInfoParams = {
-  signal: AbortSignal;
-  infoUrl: string;
-  baseUrl: string
-};
+export type FetchInfoQueryKey = [
+  typeof XBLOCK_QUERY_KEY,
+  {
+    infoUrl?: string;
+    baseUrl?: string;
+  },
+];
 
-export const fetchInfo = async ({ signal, baseUrl, infoUrl }: fetchInfoParams): Promise<IXblockInfo> => {
-  const responseDto = await baseApi.post<
-    undefined,
-    AxiosResponse<XBlockResponseDto>
-  >(baseUrl + infoUrl, "{}", { signal });
+export const fetchInfo: QueryFunction<XBlockInfo, FetchInfoQueryKey> = async ({
+  queryKey,
+  signal,
+}) => {
+  const [, { baseUrl, infoUrl }] = queryKey;
 
-  try {
-    return new XBlockInfo(responseDto.data);
-  } catch {
-    throw new Error("Failed parse XBlockInfo response");
+  if (!baseUrl || !infoUrl) {
+    throw new BadArgsError();
   }
+
+  let response: AxiosResponse<unknown, unknown>;
+  try {
+    response = await baseApi.post(baseUrl + infoUrl, "{}", { signal });
+  } catch {
+    throw new FetchError();
+  }
+
+  const parsedData = parseXBlockInfoResponseDto(response.data);
+  if (!parsedData.success) {
+    throw new ParseError();
+  }
+
+  return new XBlockInfo(parsedData.data);
 };

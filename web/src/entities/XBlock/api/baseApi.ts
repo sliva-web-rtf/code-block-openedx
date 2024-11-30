@@ -6,4 +6,4 @@ export const baseApi = axios.create({
   headers: {
     "X-Csrftoken": csrfToken,
   },
-})
+});

@@ -1,7 +1,7 @@
-import { ILanguage } from "@/entities/Language/models/ILanguage";
+import { ILanguage } from "@/entities/Language";
 import { TaskResponseDto } from "../dtos/TaskResponseDto";
 import { ITask } from "./ITask";
-import { Language } from "@/entities/Language/models/Language";
+import { Language } from "@/entities/Language";
 
 export class Task implements ITask {
   private _title: string;

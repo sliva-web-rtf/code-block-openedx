@@ -18,7 +18,9 @@ export const TaskRestrictions: FC = () => {
       <CardContent className="grid grid-cols-4">
         <div className="flex flex-col gap-2 p-2 text-center">
           <p>Время</p>
-          <p className="text-lg text-muted-foreground">{data.timeLimit.getSeconds()} секунд</p>
+          <p className="text-lg text-muted-foreground">
+            {data.timeLimit.getSeconds()} секунд
+          </p>
         </div>
         <div className="flex flex-col gap-2 p-2 text-center">
           <p>Память</p>

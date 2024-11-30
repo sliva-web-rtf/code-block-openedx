@@ -13,5 +13,5 @@ export interface ITask {
   exampleTests: {
     stdin: string;
     stdout: string;
-  }[]
+  }[];
 }

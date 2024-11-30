@@ -1,1 +1,1 @@
-export type IXBlockContext = { infoUrl?: string, baseUrl?: string };
+export type IXBlockContext = { infoUrl?: string; baseUrl?: string };

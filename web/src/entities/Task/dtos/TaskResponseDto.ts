@@ -1,21 +1,26 @@
-import { LanguageResponseDto } from "@/entities/Language/dtos/LanguageResponseDto";
+import { LanguageResponseSchema } from "@/entities/Language";
+import { z } from "zod";
 
-export type TaskResponseDto = {
-  title: string;
-  content: string;
-  format: {
-    inputFormat: string;
-    outputFormat: string;
-  };
-  languages: LanguageResponseDto[];
-  maxAttempts: number;
-  attempts: number;
-  restrictions: {
-    memoryLimitInKib: number;
-    timeLimit: string;
-  };
-  exampleTests: {
-    stdin: string;
-    stdout: string;
-  }[]
-};
+export const TaskResponseSchema = z.object({
+  title: z.string(),
+  content: z.string(),
+  format: z.object({
+    inputFormat: z.string(),
+    outputFormat: z.string(),
+  }),
+  languages: z.array(LanguageResponseSchema),
+  maxAttempts: z.number(),
+  attempts: z.number(),
+  restrictions: z.object({
+    memoryLimitInKib: z.number(),
+    timeLimit: z.string(),
+  }),
+  exampleTests: z.array(
+    z.object({
+      stdin: z.string(),
+      stdout: z.string(),
+    }),
+  ),
+});
+
+export type TaskResponseDto = z.infer<typeof TaskResponseSchema>;

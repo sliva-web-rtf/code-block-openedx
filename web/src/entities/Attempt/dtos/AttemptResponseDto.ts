@@ -1,13 +1,18 @@
+import { z } from "zod";
 import { AnswerVerdict } from "../libs/verdict";
 
-export type AttemptResponseDto = {
-  createdAt: string;
-  verdict: AnswerVerdict;
-  score: string;
-  time: string;
-  test: string;
-};
+export const AttemptResponseSchema = z.object({
+  createdAt: z.string().datetime(),
+  verdict: z.nativeEnum(AnswerVerdict),
+  score: z.string().min(1),
+  time: z.string().min(1),
+  test: z.string().min(1),
+});
 
-export type AttemptsResponseDto = {
-  attempts: AttemptResponseDto[]
-}
+export type AttemptResponseDto = z.infer<typeof AttemptResponseSchema>;
+
+export const AttemptsResponseSchema = z.object({
+  attempts: z.array(AttemptResponseSchema),
+});
+
+export type AttemptsResponseDto = z.infer<typeof AttemptsResponseSchema>;

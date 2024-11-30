@@ -8,14 +8,10 @@ import eslintPluginPrettierRecommended from "eslint-plugin-prettier/recommended"
 import pluginQuery from "@tanstack/eslint-plugin-query";
 
 export default tseslint.config(
-  pluginQuery,
+  ...pluginQuery.configs["flat/recommended"],
   { ignores: ["dist"] },
   {
-    extends: [
-      js.configs.recommended,
-      ...tseslint.configs.recommended,
-      eslintConfigPrettier,
-    ],
+    extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
       ecmaVersion: 2020,
@@ -33,5 +29,6 @@ export default tseslint.config(
       ],
     },
   },
+  eslintConfigPrettier,
   eslintPluginPrettierRecommended,
 );

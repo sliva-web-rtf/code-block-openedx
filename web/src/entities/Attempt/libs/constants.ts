@@ -1,1 +1,1 @@
-export const ATTEMPTS_QUERY_KEY = 'attempts'
+export const ATTEMPTS_QUERY_KEY = "attempts";

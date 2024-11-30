@@ -7,9 +7,9 @@ export const TaskDescription: FC = () => {
   const { data: taskData, isLoading: isTaskLoading } = useTask();
 
   if (isTaskLoading || !taskData) {
-    return <TaskDescriptionSkeleton />
+    return <TaskDescriptionSkeleton />;
   }
-  
+
   return (
     <Card>
       <CardHeader>

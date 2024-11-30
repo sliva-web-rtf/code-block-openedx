@@ -1,36 +1,51 @@
-
-import axios, { AxiosResponse } from "axios";
+import { AxiosResponse } from "axios";
 import { Attempt } from "../models/Attempt";
-import { AttemptsResponseDto } from "../dtos/AttemptResponseDto";
+import { baseRadiumApi } from "@/shared/api/baseRadiumApi";
+import { QueryFunction } from "@tanstack/react-query";
+import { IAttempt } from "../models/IAttempt";
+import { ATTEMPTS_QUERY_KEY } from "../libs/constants";
+import { BadArgsError } from "@/shared/libs/BadArgsError";
+import { FetchError } from "@/shared/libs/FetchError";
+import { parseAttemptsResponseDto } from "../utils/parseAttemptsResponseDto";
+import { ParseError } from "@/shared/libs/ParseError";
 
-type fetchAttemptsParams = {
-  signal?: AbortSignal;
-  sectionId: string;
-  relationId: string;
-  userId: string;
-};
+export type FetchAttemptsParams = [
+  typeof ATTEMPTS_QUERY_KEY,
+  {
+    sectionId?: string;
+    relationId?: string;
+    userId?: string;
+  },
+];
 
-export const fetchAttempts = async ({
-  signal,
-  relationId,
-  sectionId,
-  userId
-}: fetchAttemptsParams) => {
-  const responseDto = await axios.get<
-    undefined,
-    AxiosResponse<AttemptsResponseDto>
-  >("https://api.radium-rtf.ru/v1/relation/attempts", {
-    signal,
-    params: {
-      sectionId,
-      relationId,
-      userId
-    },
-  });
+export const fetchAttempts: QueryFunction<
+  IAttempt[],
+  FetchAttemptsParams
+> = async ({ queryKey, signal }) => {
+  const [, { relationId, sectionId, userId }] = queryKey;
 
-  try {
-    return responseDto.data.attempts.map((attemptDto) => new Attempt(attemptDto));
-  } catch {
-    throw new Error("Failed parse XBlockInfo response");
+  if (!relationId || !sectionId || !userId) {
+    throw new BadArgsError();
   }
+
+  let response: AxiosResponse<unknown, unknown>;
+  try {
+    response = await baseRadiumApi.get("/v1/relation/attempts", {
+      signal,
+      params: {
+        sectionId,
+        relationId,
+        userId,
+      },
+    });
+  } catch {
+    throw new FetchError();
+  }
+
+  const parsedData = parseAttemptsResponseDto(response.data);
+  if (!parsedData.success) {
+    throw new ParseError();
+  }
+
+  return parsedData.data.attempts.map((attempt) => new Attempt(attempt));
 };

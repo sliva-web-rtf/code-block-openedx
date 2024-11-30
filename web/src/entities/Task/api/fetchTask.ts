@@ -1,32 +1,49 @@
 import { Task } from "../models/Task";
-import axios, { AxiosResponse } from "axios";
-import { TaskResponseDto } from "../dtos/TaskResponseDto";
+import { AxiosResponse } from "axios";
+import { TASK_QUERY_KEY } from "../libs/constants";
+import { QueryFunction } from "@tanstack/react-query";
+import { ITask } from "../models/ITask";
+import { BadArgsError } from "@/shared/libs/BadArgsError";
+import { baseRadiumApi } from "@/shared/api/baseRadiumApi";
+import { FetchError } from "@/shared/libs/FetchError";
+import { parseTaskResponseDto } from "../utils/parseTaskResponseDto";
+import { ParseError } from "@/shared/libs/ParseError";
 
-type fetchTaskParams = {
-  signal?: AbortSignal;
-  sectionId: string;
-  relationId: string;
-};
+export type FetchTaskQueryKey = [
+  typeof TASK_QUERY_KEY,
+  {
+    sectionId?: string;
+    relationId?: string;
+  },
+];
 
-export const fetchTask = async ({
+export const fetchTask: QueryFunction<ITask, FetchTaskQueryKey> = async ({
+  queryKey,
   signal,
-  relationId,
-  sectionId,
-}: fetchTaskParams) => {
-  const responseDto = await axios.get<
-    undefined,
-    AxiosResponse<TaskResponseDto>
-  >("https://api.radium-rtf.ru/v1/relation/section", {
-    signal,
-    params: {
-      sectionId,
-      relationId,
-    },
-  });
+}) => {
+  const [, { relationId, sectionId }] = queryKey;
 
-  try {
-    return new Task(responseDto.data);
-  } catch {
-    throw new Error("Failed parse XBlockInfo response");
+  if (!sectionId || !relationId) {
+    throw new BadArgsError();
   }
+
+  let response: AxiosResponse<unknown, unknown>;
+  try {
+    response = await baseRadiumApi.get("/v1/relation/section", {
+      signal,
+      params: {
+        sectionId,
+        relationId,
+      },
+    });
+  } catch {
+    throw new FetchError();
+  }
+
+  const parsedData = parseTaskResponseDto(response.data);
+  if (!parsedData.success) {
+    throw new ParseError();
+  }
+
+  return new Task(parsedData.data);
 };
