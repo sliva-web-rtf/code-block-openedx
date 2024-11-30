@@ -1,13 +1,8 @@
-export enum ErrorType {
-  FETCH = "fetch",
-  PARSE = "parse",
-  UNKNOWN = "unknown",
-  BAD_ARGS = "bad_args",
-}
+import type { ErrorType, IError } from "../types";
 
-export class BaseError {
+export class BaseError implements IError {
   constructor(
-    public errorType: ErrorType,
+    public type: ErrorType,
     public message: string,
   ) {}
 }

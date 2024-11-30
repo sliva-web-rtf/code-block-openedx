@@ -1,7 +1,10 @@
-import { BaseError, ErrorType } from "./BaseError";
+import { ErrorType } from "../types";
+import { BaseError } from "./BaseError";
+
+const DEFAULT_PARSE_ERROR_MESSAGE = "Не удалось валидировать данные";
 
 export class ParseError extends BaseError {
-  constructor() {
-    super(ErrorType.PARSE, "Не удалось валидировать данные");
+  constructor(message: string = DEFAULT_PARSE_ERROR_MESSAGE) {
+    super(ErrorType.PARSE, message);
   }
 }

@@ -37,12 +37,12 @@ export const fetchTask: QueryFunction<ITask, FetchTaskQueryKey> = async ({
       },
     });
   } catch {
-    throw new FetchError();
+    throw new FetchError("Не удалось загрузить данные о задании");
   }
 
   const parsedData = parseTaskResponseDto(response.data);
   if (!parsedData.success) {
-    throw new ParseError();
+    throw new ParseError("Не удалось валидировать данные о задании");
   }
 
   return new Task(parsedData.data);

@@ -1,7 +1,10 @@
-import { BaseError, ErrorType } from "./BaseError";
+import { ErrorType } from "../types";
+import { BaseError } from "./BaseError";
+
+const DEFAULT_FETCH_ERROR_MESSAGE = "Не удалось загрузить данные";
 
 export class FetchError extends BaseError {
-  constructor() {
-    super(ErrorType.UNKNOWN, "Не удалось загрузить данные");
+  constructor(message: string = DEFAULT_FETCH_ERROR_MESSAGE) {
+    super(ErrorType.FETCH, message);
   }
 }

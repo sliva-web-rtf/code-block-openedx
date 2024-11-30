@@ -30,12 +30,16 @@ export const fetchInfo: QueryFunction<XBlockInfo, FetchInfoQueryKey> = async ({
   try {
     response = await baseApi.post(baseUrl + infoUrl, "{}", { signal });
   } catch {
-    throw new FetchError();
+    throw new FetchError(
+      "Не удалось загрузить данные о платформе и пользователе",
+    );
   }
 
   const parsedData = parseXBlockInfoResponseDto(response.data);
   if (!parsedData.success) {
-    throw new ParseError();
+    throw new ParseError(
+      "Не удалось валидировать данные о платформе и пользователях",
+    );
   }
 
   return new XBlockInfo(parsedData.data);

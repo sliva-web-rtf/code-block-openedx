@@ -51,3 +51,4 @@ export {
 } from "./accordion";
 
 export { ScrollArea, ScrollBar } from "./scroll-area";
+export { ErrorUI } from "./error";

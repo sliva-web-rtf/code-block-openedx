@@ -1,4 +1,5 @@
-import { BaseError, ErrorType } from "./BaseError";
+import { ErrorType } from "../types";
+import { BaseError } from "./BaseError";
 
 export class BadArgsError extends BaseError {
   constructor() {
