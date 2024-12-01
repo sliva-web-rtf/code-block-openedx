@@ -13,8 +13,6 @@ export default defineConfig({
     rollupOptions: {
       input: ["index.html"],
       output: {
-        assetFileNames: "codeblock.[ext]",
-        chunkFileNames: "codeblock.[ext]",
         entryFileNames: "codeblock.js",
       },
     },

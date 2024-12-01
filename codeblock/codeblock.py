@@ -31,15 +31,28 @@ class CodeBlockXBlock(XBlock):
         fragment.add_content(self.loader.render_django_template("static/html/codeblock.html"))
         fragment.add_javascript(self.resource_string("static/js/src/init.js"))
         fragment.initialize_js('CodeBlockXBlock')
-        # html = self.resource_string("static/html/codeblock.html")
-        # frag = Fragment(html.format(self=self))
-        # # frag.add_css(self.resource_string("static/css/codeblock.css"))
-        # frag.add_javascript(self.resource_string("static/js/src/init.js"))
-        # frag.initialize_js('CodeBlockXBlock')
+        return fragment
+    
+    def studio_view(self, context=None):
+        fragment = Fragment()
+        fragment.add_content(self.loader.render_django_template("static/html/codeblockAdmin.html"))
+        fragment.add_javascript(self.resource_string("static/js/src/initAdmin.js"))
+        fragment.initialize_js('CodeBlockAdminXBlock')
         return fragment
 
     @XBlock.json_handler
     def info(self, data, suffix=''):
+        return {
+            "sectionId": self.section_id,
+            "relationId": self.relation_id,
+            "userId": self.runtime.service(self, 'user').get_current_user().emails[0]
+        }
+    
+    @XBlock.json_handler
+    def patchInfo(self, data, suffix=''):
+        self.section_id = data['sectionId'];
+        self.relation_id = data['relationId'];
+
         return {
             "sectionId": self.section_id,
             "relationId": self.relation_id,
