@@ -46,7 +46,11 @@ function CodeBlockXBlock(runtime, element) {
         if (!node) {
             return
         }
-        observer.observe(node.contentDocument.body)
+
+        if (node.contentDocument?.body) {
+            observer.observe(node.contentDocument.body)
+        }
+
         node.addEventListener('load', () => queueMicrotask(() => observer.observe(node.contentDocument.body)))
     }
 
